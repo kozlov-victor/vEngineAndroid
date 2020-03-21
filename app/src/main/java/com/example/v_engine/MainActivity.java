@@ -1,14 +1,10 @@
-package com.example.myapplicationj2v82;
+package com.example.v_engine;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.eclipsesource.v8.V8;
-import com.example.myapplicationj2v82.gl_surface.EngineGLSurfaceView;
-import com.example.myapplicationj2v82.misc.Bindings;
-import com.example.myapplicationj2v82.html5_objects.Console;
-import com.example.myapplicationj2v82.misc.Files;
+import com.example.v_engine.gl_surface.EngineGLSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
 

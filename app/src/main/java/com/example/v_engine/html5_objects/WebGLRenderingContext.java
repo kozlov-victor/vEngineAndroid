@@ -1,18 +1,16 @@
-package com.example.myapplicationj2v82.html5_objects;
+package com.example.v_engine.html5_objects;
 
 import android.opengl.GLES20;
 import android.os.Build;
-import android.util.Log;
 
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.V8TypedArray;
 import com.eclipsesource.v8.V8Value;
-import com.example.myapplicationj2v82.misc.GLObjects;
-import com.example.myapplicationj2v82.misc.buffers.Buffers;
+import com.example.v_engine.misc.GLObjects;
+import com.example.v_engine.misc.buffers.Buffers;
 
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class WebGLRenderingContext {

@@ -1,18 +1,17 @@
-package com.example.myapplicationj2v82.gl_surface;
+package com.example.v_engine.gl_surface;
 
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Function;
-import com.example.myapplicationj2v82.html5_objects.Console;
-import com.example.myapplicationj2v82.html5_objects.WebGLRenderingContext;
-import com.example.myapplicationj2v82.misc.Bindings;
-import com.example.myapplicationj2v82.misc.FPSCounter;
-import com.example.myapplicationj2v82.misc.Files;
+import com.example.v_engine.html5_objects.Console;
+import com.example.v_engine.html5_objects.WebGLRenderingContext;
+import com.example.v_engine.misc.Bindings;
+import com.example.v_engine.misc.FPSCounter;
+import com.example.v_engine.misc.Files;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

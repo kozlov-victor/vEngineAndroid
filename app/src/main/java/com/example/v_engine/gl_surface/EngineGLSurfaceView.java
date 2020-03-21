@@ -1,4 +1,4 @@
-package com.example.myapplicationj2v82.gl_surface;
+package com.example.v_engine.gl_surface;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;

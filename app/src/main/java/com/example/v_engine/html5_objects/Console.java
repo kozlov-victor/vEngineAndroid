@@ -1,4 +1,4 @@
-package com.example.myapplicationj2v82.html5_objects;
+package com.example.v_engine.html5_objects;
 
 import android.util.Log;
 
