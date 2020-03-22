@@ -1,8 +1,10 @@
 package com.example.v_engine.gl_surface;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.DisplayMetrics;
 
 
 import com.eclipsesource.v8.V8;
@@ -12,6 +14,7 @@ import com.example.v_engine.html5_objects.WebGLRenderingContext;
 import com.example.v_engine.misc.Bindings;
 import com.example.v_engine.misc.FPSCounter;
 import com.example.v_engine.misc.Files;
+import com.example.v_engine.misc.GLObjects;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,15 +33,24 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         this.glSurfaceView = glSurfaceView;
     }
 
+    @SuppressLint("DefaultLocale")
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(0,1,1,1);
 
+        DisplayMetrics metrics = this.context.getResources().getDisplayMetrics();
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+
         V8 runtime = V8.createV8Runtime();
+        GLObjects glObjects = new GLObjects(runtime);
+        Files files = new Files(this.context,runtime,glObjects);
+        runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",widthPixels,heightPixels));
         Bindings.bindObjectToV8(runtime,new Console(),"console");
-        Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime),"_globalGL");
-        runtime.executeVoidScript(Files.loadAssetFile(context,"primer.js"));
-        runtime.executeVoidScript(Files.loadAssetFile(context,"test.js"));
+        Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,files),"_globalGL");
+        Bindings.bindObjectToV8(runtime,files,"_files");
+        runtime.executeVoidScript(files.loadAssetAsString("primer.js"));
+        runtime.executeVoidScript(files.loadAssetAsString("out/scml5.js"));
         renderCallBack = (V8Function)runtime.executeObjectScript("_requestAnimationFrameGlobalCallBack");
         this.runtime = runtime;
 
@@ -56,7 +68,10 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+    @SuppressLint("DefaultLocale")
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",width,height));
+        runtime.executeVoidScript("_triggerEvent('resize')");
     }
 }

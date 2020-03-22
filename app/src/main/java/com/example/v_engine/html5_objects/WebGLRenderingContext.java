@@ -1,15 +1,16 @@
 package com.example.v_engine.html5_objects;
 
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.os.Build;
-
+import android.util.Log;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.V8TypedArray;
 import com.eclipsesource.v8.V8Value;
+import com.example.v_engine.misc.Files;
 import com.example.v_engine.misc.GLObjects;
-import com.example.v_engine.misc.buffers.Buffers;
 
 import java.nio.IntBuffer;
 
@@ -327,12 +328,13 @@ public class WebGLRenderingContext {
 
     private V8 runtime;
 
-    private final Buffers buffers = new Buffers();
     private final GLObjects glObjects;
+    private final Files files;
 
-    public WebGLRenderingContext(V8 runtime) {
+    public WebGLRenderingContext(V8 runtime, GLObjects glObjects,Files files) {
         this.runtime = runtime;
-        glObjects = new GLObjects(this.runtime);
+        this.glObjects = glObjects;
+        this.files = files;
     }
 
     public void activeTexture(
@@ -457,11 +459,11 @@ public class WebGLRenderingContext {
     ) {
         switch (data.getType()) {
             case V8Value.FLOAT_32_ARRAY: {
-                GLES20.glBufferData(target,data.length()*BYTES_PER_FLOAT_32,buffers.toFloatBuffer(data),usage);
+                GLES20.glBufferData(target,data.length()*BYTES_PER_FLOAT_32,data.getByteBuffer().asFloatBuffer(),usage);
                 break;
             }
             case V8Value.UNSIGNED_INT_16_ARRAY: {
-                GLES20.glBufferData(target,data.length()*BYTES_PER_INT_16,buffers.toShortBuffer(data),usage);
+                GLES20.glBufferData(target,data.length()*BYTES_PER_INT_16,data.getByteBuffer().asIntBuffer(),usage);
                 break;
             }
             default: {
@@ -481,7 +483,7 @@ public class WebGLRenderingContext {
     ) {
         switch (data.getType()) {
             case V8Value.FLOAT_32_ARRAY: {
-                GLES20.glBufferSubData(target,offset,data.length(),buffers.toFloatBuffer(data));
+                GLES20.glBufferSubData(target,offset,data.length(),data.getByteBuffer().asFloatBuffer());
                 break;
             }
             default: {
@@ -1734,7 +1736,7 @@ public class WebGLRenderingContext {
 
     // c function void texImage2D ( gLenum target, gLint level, gLint internalformat, gLsizei width, gLsizei height, gLint border, gLenum format, gLenum type, const gLvoid *pixels )
 
-    public void texImage2D(
+    public void texImage2D_9(
             int target,
             int level,
             int internalFormat,
@@ -1743,18 +1745,41 @@ public class WebGLRenderingContext {
             int border,
             int format,
             int type,
-            Object data
+            V8TypedArray data
     ) {
         if (data==null) {
             GLES20.glTexImage2D(target,level,internalFormat,width,height,border,format,type,null);
         }
-        else if (data instanceof V8TypedArray) {
-            GLES20.glTexImage2D(target,level,internalFormat,width,height,border,format,type,buffers.toByteBuffer((V8TypedArray)data));
-        } else if (data instanceof V8Object) { // HTMLImageElement
-            //GLES20.glTexImage2D(target,level,internalFormat,width,height,border,format,type,((HTMLImageElement)data).getBuffer()); // todo
-        } else {
-            throw new RuntimeException("unknown source for texImage2D");
-        }
+        else GLES20.glTexImage2D(target,level,internalFormat,width,height,border,format,type,data.getByteBuffer());
+    }
+
+    public void texImage2D_6(
+            int target,
+            int level,
+            int internalFormat,
+            int format,
+            int type,
+            V8Object source
+    ){
+        GLUtils.texImage2D(target,level,files.getCachedBitmap((V8Object)source),0);
+    }
+
+
+    // c function void texSubImage2D ( gLenum target, gLint level, gLint xoffset, gLint yoffset, gLsizei width, gLsizei height, gLenum format, gLenum type, const gLvoid *pixels )
+
+    // gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, this.size.width, this.size.height, gl.RGBA, gl.UNSIGNED_BYTE, this._data);
+    public void texSubImage2D(
+            int target,
+            int level,
+            int xoffset,
+            int yoffset,
+            int width,
+            int height,
+            int format,
+            int type,
+            V8TypedArray buffer
+    ) {
+        GLES20.glTexSubImage2D(target,level,xoffset,yoffset,width,height,format,type,buffer.getByteBuffer());
     }
 
     // c function void texParameterf ( gLenum target, gLenum pname, gLfloat param )
@@ -1819,21 +1844,7 @@ public class WebGLRenderingContext {
 //    ) {
 //    }
 
-    // c function void texSubImage2D ( gLenum target, gLint level, gLint xoffset, gLint yoffset, gLsizei width, gLsizei height, gLenum format, gLenum type, const gLvoid *pixels )
 
-    public void texSubImage2D(
-            int target,
-            int level,
-            int xoffset,
-            int yoffset,
-            int width,
-            int height,
-            int format,
-            int type,
-            V8TypedArray buffer
-    ) {
-        GLES20.glTexSubImage2D(target,level,xoffset,yoffset,width,height,format,type,buffers.toByteBuffer(buffer));
-    }
 
     // c function void uniform1f ( gLint location, gLfloat x )
 
@@ -1860,7 +1871,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform1fv(glObjects.getId(location),v.length(),buffers.toFloatBuffer(v));
+        GLES20.glUniform1fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform1i ( gLint location, gLint x )
@@ -1888,7 +1899,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform1iv(glObjects.getId(location),v.length(),buffers.toIntBuffer(v));
+        GLES20.glUniform1iv(glObjects.getId(location),v.length(),v.getByteBuffer().asIntBuffer());
     }
 
     // c function void uniform2f ( gLint location, gLfloat x, gLfloat y )
@@ -1917,7 +1928,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform2fv(glObjects.getId(location),v.length(),buffers.toFloatBuffer(v));
+        GLES20.glUniform2fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform2i ( gLint location, gLint x, gLint y )
@@ -1946,7 +1957,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform2iv(glObjects.getId(location),v.length(),buffers.toIntBuffer(v));
+        GLES20.glUniform2iv(glObjects.getId(location),v.length(),v.getByteBuffer().asIntBuffer());
     }
 
     // c function void uniform3f ( gLint location, gLfloat x, gLfloat y, gLfloat z )
@@ -1976,7 +1987,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform2fv(glObjects.getId(location),v.length(),buffers.toFloatBuffer(v));
+        GLES20.glUniform3fv(glObjects.getId(location),1,v.getByteBuffer().asFloatBuffer()); // todo
     }
 
     // c function void uniform3i ( gLint location, gLint x, gLint y, gLint z )
@@ -2006,7 +2017,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform3iv(glObjects.getId(location),v.length(),buffers.toIntBuffer(v));
+        GLES20.glUniform3iv(glObjects.getId(location),v.length(),v.getByteBuffer().asIntBuffer());
     }
 
     // c function void uniform4f ( gLint location, gLfloat x, gLfloat y, gLfloat z, gLfloat w )
@@ -2037,7 +2048,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform4fv(glObjects.getId(location),v.length(),buffers.toFloatBuffer(v));
+        GLES20.glUniform4fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform4i ( gLint location, gLint x, gLint y, gLint z, gLint w )
@@ -2068,7 +2079,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform4iv(glObjects.getId(location),v.length(),buffers.toIntBuffer(v));
+        GLES20.glUniform4iv(glObjects.getId(location),v.length(),v.getByteBuffer().asIntBuffer());
     }
 
     // c function void uniformMatrix2fv ( gLint location, gLsizei count, gLboolean transpose, const gLfloat *value )
@@ -2089,7 +2100,7 @@ public class WebGLRenderingContext {
             boolean transpose,
             V8TypedArray v
     ) {
-        GLES20.glUniformMatrix2fv(glObjects.getId(location),1,transpose,buffers.toFloatBuffer(v));
+        GLES20.glUniformMatrix2fv(glObjects.getId(location),1,transpose,v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniformMatrix3fv ( gLint location, gLsizei count, gLboolean transpose, const gLfloat *value )
@@ -2110,7 +2121,7 @@ public class WebGLRenderingContext {
             boolean transpose,
             V8TypedArray v
     ) {
-        GLES20.glUniformMatrix3fv(glObjects.getId(location),1,transpose,buffers.toFloatBuffer(v));
+        GLES20.glUniformMatrix3fv(glObjects.getId(location),1,transpose,v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniformMatrix4fv ( gLint location, gLsizei count, gLboolean transpose, const gLfloat *value )
@@ -2131,23 +2142,24 @@ public class WebGLRenderingContext {
             boolean transpose,
             V8TypedArray v
     ) {
-        GLES20.glUniformMatrix4fv(glObjects.getId(location),1,transpose,buffers.toFloatBuffer(v));
+        GLES20.glUniformMatrix4fv(glObjects.getId(location),1,transpose,v.getByteBuffer().asFloatBuffer());
     }
 
-    public void uniformMatrix4fv(
-            V8Object location,
-            int transpose,
-            V8TypedArray v
-    ) {
-        uniformMatrix4fv(location,transpose==1,v);
-    }
+//    public void uniformMatrix4fv(
+//            V8Object location,
+//            int transpose,
+//            V8TypedArray v
+//    ) {
+//        uniformMatrix4fv(location,transpose==1,v);
+//    }
 
     // c function void useProgram ( gLuint program )
 
     public void useProgram(
             V8Object program
     ) {
-        GLES20.glUseProgram(glObjects.getId(program));
+        if (program==null) GLES20.glUseProgram(0);
+        else GLES20.glUseProgram(glObjects.getId(program));
     }
 
     // c function void validateProgram ( gLuint program )
@@ -2182,7 +2194,7 @@ public class WebGLRenderingContext {
             int indx,
             V8TypedArray values
     ) {
-        GLES20.glVertexAttrib1fv(indx,buffers.toFloatBuffer(values));
+        GLES20.glVertexAttrib1fv(indx,values.getByteBuffer().asFloatBuffer());
     }
 
     // c function void vertexAttrib2f ( gLuint indx, gLfloat x, gLfloat y )
@@ -2210,7 +2222,7 @@ public class WebGLRenderingContext {
             int indx,
             V8TypedArray values
     ) {
-        GLES20.glVertexAttrib2fv(indx,buffers.toFloatBuffer(values));
+        GLES20.glVertexAttrib2fv(indx,values.getByteBuffer().asFloatBuffer());
     }
 
     // c function void vertexAttrib3f ( gLuint indx, gLfloat x, gLfloat y, gLfloat z )
@@ -2239,7 +2251,7 @@ public class WebGLRenderingContext {
             int indx,
             V8TypedArray values
     ) {
-        GLES20.glVertexAttrib3fv(indx,buffers.toFloatBuffer(values));
+        GLES20.glVertexAttrib3fv(indx,values.getByteBuffer().asFloatBuffer());
     }
 
     // c function void vertexAttrib4f ( gLuint indx, gLfloat x, gLfloat y, gLfloat z, gLfloat w )
@@ -2269,7 +2281,7 @@ public class WebGLRenderingContext {
             int indx,
             V8TypedArray values
     ) {
-        GLES20.glVertexAttrib4fv(indx,buffers.toFloatBuffer(values));
+        GLES20.glVertexAttrib4fv(indx,values.getByteBuffer().asFloatBuffer());
     }
 
     // c function void vertexAttribPointer ( gLuint indx, gLint size, gLenum type, gLboolean normalized, gLsizei stride, gLint offset )
@@ -2285,16 +2297,16 @@ public class WebGLRenderingContext {
         GLES20.glVertexAttribPointer(indx,size,type,normalized,stride,offset);
     }
 
-    public void vertexAttribPointer(
-            int indx,
-            int size,
-            int type,
-            int normalized,
-            int stride,
-            int offset
-    ) {
-        vertexAttribPointer(indx,size,type,normalized==1,stride,offset);
-    }
+//    public void vertexAttribPointer(
+//            int indx,
+//            int size,
+//            int type,
+//            int normalized,
+//            int stride,
+//            int offset
+//    ) {
+//        vertexAttribPointer(indx,size,type,normalized==1,stride,offset);
+//    }
 
     // c function void vertexAttribPointer ( gLuint indx, gLint size, gLenum type, gLboolean normalized, gLsizei stride, const gLvoid *ptr )
 

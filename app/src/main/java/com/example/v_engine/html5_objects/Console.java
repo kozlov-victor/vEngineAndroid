@@ -4,21 +4,26 @@ import android.util.Log;
 
 public class Console {
 
-    public void log(Object ...args) {
-        if (args==null) return;
+    private String logsToStr(Object ...args){
+        if (args==null) return "undefined";
         String s = "";
         for (Object arg : args) {
-            s = s.concat(arg.toString()).concat(" ");
+            String toStr = arg==null?"null":arg.toString();
+            s = s.concat(toStr).concat(" ");
         }
-        Log.d("VE",s);
+        return s;
+    }
+
+    public void log(Object ...args) {
+        Log.d("VE",logsToStr(args));
     }
 
     public void error(Object ...args) {
-        log(args);
+        Log.e("VE",logsToStr(args));
     }
 
     public void trace(Object ...args) {
-        log(args);
+        Log.d("VE",logsToStr(args));
     }
 
 }

@@ -14,7 +14,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+            abiFilters "armeabi", "armeabi-v7a", "x86", "mips", "arm64-v8a", "x86_64", "arm_32"
         }
     }
 
@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.eclipsesource.j2v8:j2v8:4.8.4@aar'
+    implementation 'com.eclipsesource.j2v8:j2v8:4.8.5@aar'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
