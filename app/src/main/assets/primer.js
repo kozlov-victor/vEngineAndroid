@@ -19,6 +19,9 @@ _globalGL.texImage2D = (...args)=>{
             this.width = innerWidth;
             this.height = innerHeight;
             this.style = {};
+            this.ontouchstart = ()=>{};
+            this.ontouchmove = ()=>{};
+            this.ontouchend = ()=>{};
         }
         getContext(val){
             return _globalGL;
@@ -29,15 +32,17 @@ _globalGL.texImage2D = (...args)=>{
         }
     }
 
+    window._globalCanvas = new Canvas();
+
     class Document {
         constructor(){
-            this.canvas = new Canvas();
+            this.canvas = window._globalCanvas;
             this.body = {
                 appendChild:()=>{}
             }
         }
         createElement(val){
-            if (val==='canvas') return new Canvas();
+            if (val==='canvas') return window._globalCanvas;
         }
         getElementById(val){
             return this.canvas;
@@ -159,9 +164,9 @@ _globalGL.texImage2D = (...args)=>{
     window.removeEventListener = (name,cb)=>{
         events.splice(events.indexOf(it=>it.cb===cb),1);
     }
-    window._triggerEvent = (name)=>{
+    window._triggerEvent = (name,arg)=>{
         events.forEach(it=>{
-            if (it.name===name) it.cb();
+            if (it.name===name) it.cb(arg);
         });
     }
 
