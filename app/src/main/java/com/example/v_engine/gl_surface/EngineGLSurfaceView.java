@@ -26,16 +26,20 @@ public class EngineGLSurfaceView extends GLSurfaceView implements View.OnTouchLi
     @Override
     public boolean onTouch(View v, MotionEvent e) {
 
+        float x = e.getX();
+        float y = e.getY();
+        int id = e.getPointerCount();
+
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                engineGLRenderer.dispatchEvent(e.getX(),e.getY(),0,"ontouchstart");
+                engineGLRenderer.dispatchEvent(x, y, id,"ontouchstart");
                 break;
             case MotionEvent.ACTION_MOVE:
-                engineGLRenderer.dispatchEvent(e.getX(),e.getY(),0,"ontouchmove");
+                engineGLRenderer.dispatchEvent(x, y, id,"ontouchmove");
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                engineGLRenderer.dispatchEvent(e.getX(),e.getY(),0,"ontouchend");
+                engineGLRenderer.dispatchEvent(x, y, id,"ontouchend");
                 break;
         }
         return true;

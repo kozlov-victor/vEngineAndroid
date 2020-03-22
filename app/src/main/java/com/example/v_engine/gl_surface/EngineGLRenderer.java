@@ -58,7 +58,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,files),"_globalGL");
         Bindings.bindObjectToV8(runtime,files,"_files");
         runtime.executeVoidScript(files.loadAssetAsString("primer.js"));
-        runtime.executeVoidScript(files.loadAssetAsString("out/dragAndDrop.js"));
+        runtime.executeVoidScript(files.loadAssetAsString("out/shapes.js"));
         renderCallBack = (V8Function)runtime.executeObjectScript("_requestAnimationFrameGlobalCallBack");
         this.runtime = runtime;
 
