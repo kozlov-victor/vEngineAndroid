@@ -1,9 +1,9 @@
-package com.example.v_engine.misc;
+package com.v_engine.misc;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.eclipsesource.v8.V8;
@@ -26,6 +26,7 @@ public class Files {
 
     private String processLocalUrl(String url){
         if (url.startsWith("./")) url = url.replace("./","");
+        if (url.contains("?")) url = url.split("\\?")[0];
         return url;
     }
 
@@ -82,6 +83,16 @@ public class Files {
             bitmapCache.put(id,bitmap);
             return v8Object;
         } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public AssetFileDescriptor loadAssetAsAudio(String fileName) {
+        fileName = processLocalUrl(fileName);
+        try {
+            return context.getAssets().openFd(fileName);
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }

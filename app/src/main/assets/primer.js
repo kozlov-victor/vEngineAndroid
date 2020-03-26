@@ -3,7 +3,9 @@ let _requestAnimationFrameGlobalCallBack;
 const window = this;
 
 _globalGL.texImage2D = (...args)=>{
-    if (args.length===9) _globalGL.texImage2D_9(...args);
+    if (args.length===9) {
+        _globalGL.texImage2D_9(...args);
+    }
     else if (args.length===6) _globalGL.texImage2D_6(...args);
     else throw new Error('wrong arguments for texImage2D invocation');
 }
@@ -38,7 +40,8 @@ _globalGL.texImage2D = (...args)=>{
         constructor(){
             this.canvas = window._globalCanvas;
             this.body = {
-                appendChild:()=>{}
+                appendChild:()=>{},
+                style: {}
             }
         }
         createElement(val){
@@ -91,6 +94,35 @@ _globalGL.texImage2D = (...args)=>{
 
         get onload(){
             return this._onload;
+        }
+
+    }
+
+    class Audio {
+        constructor(){
+            this._src = null;
+            this._id = null;
+            this._loop = false;
+            this.onended = null;
+            _audioFactory.setOnAudioEnded(id=>{
+                if (id===this.id && this.onended) this.onended();
+            });
+        }
+        set src(val){
+            this._src = val;
+            this._id = _audioFactory.createAudio(this._src);
+        }
+        get src(){
+            return this._src;
+        }
+        play(){
+             _audioFactory.play(this._id);
+        }
+        stop(){
+             _audioFactory.stop(this._id);
+        }
+        canPlayType(){
+            return true;
         }
 
     }
@@ -148,6 +180,7 @@ _globalGL.texImage2D = (...args)=>{
     window.XMLHttpRequest = XMLHttpRequest;
     window.Image = Image;
     window.document = new Document();
+    window.Audio = Audio;
     window.navigator = {
         platform: 'vEngine',
         userAgent: 'vEngine'

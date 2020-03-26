@@ -1,16 +1,15 @@
-package com.example.v_engine.html5_objects;
+package com.v_engine.html5_objects;
 
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.os.Build;
-import android.util.Log;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.V8TypedArray;
 import com.eclipsesource.v8.V8Value;
-import com.example.v_engine.misc.Files;
-import com.example.v_engine.misc.GLObjects;
+import com.v_engine.misc.Files;
+import com.v_engine.misc.GLObjects;
 
 import java.nio.IntBuffer;
 
@@ -648,10 +647,30 @@ public class WebGLRenderingContext {
 
     // c function void deleteProgram ( gLuint program )
 
+    public void deleteRenderbuffer(V8Object renderbuffer){
+        int[] buffers = {glObjects.getId(renderbuffer)};
+        GLES20.glDeleteRenderbuffers(1,buffers,0);
+    }
+
+    public void deleteBuffer(V8Object buffer){
+        int[] buffers = {glObjects.getId(buffer)};
+        GLES20.glDeleteBuffers(1,buffers,0);
+    }
+
+    public void deleteFramebuffer(V8Object framebuffer){
+        int[] buffers = {glObjects.getId(framebuffer)};
+        GLES20.glDeleteFramebuffers(1,buffers,0);
+    }
+
     public void deleteProgram(
             V8Object program
     ) {
         GLES20.glDeleteProgram(glObjects.getId(program));
+    }
+
+    public void deleteTexture(V8Object texture){
+        int[] buffers = {glObjects.getId(texture)};
+        GLES20.glDeleteTextures(1,buffers,0);
     }
 
     // c function void deleteRenderbuffers ( gLsizei n, const gLuint *renderbuffers )
@@ -1636,12 +1655,12 @@ public class WebGLRenderingContext {
     // c function void scissor ( gLint x, gLint y, gLsizei width, gLsizei height )
 
     public void scissor(
-            int x,
-            int y,
-            int width,
-            int height
+            double x,
+            double y,
+            double width,
+            double height
     ) {
-        GLES20.glScissor(x,y,width,height);
+        GLES20.glScissor((int)x,(int)y,(int)width,(int)height);
     }
 
     // c function void shaderBinary ( gLsizei n, const gLuint *shaders, gLenum binaryformat, const gLvoid *binary, gLsizei length )

@@ -1,8 +1,7 @@
-package com.example.v_engine.gl_surface;
+package com.v_engine.gl_surface;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 

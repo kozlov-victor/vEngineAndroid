@@ -1,7 +1,9 @@
-package com.example.v_engine.gl_surface;
+package com.v_engine.gl_surface;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
@@ -10,13 +12,18 @@ import android.util.Log;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Function;
-import com.example.v_engine.html5_objects.Console;
-import com.example.v_engine.html5_objects.WebGLRenderingContext;
-import com.example.v_engine.misc.Bindings;
-import com.example.v_engine.misc.FPSCounter;
-import com.example.v_engine.misc.Files;
-import com.example.v_engine.misc.GLObjects;
-import com.example.v_engine.touch.TouchDispatcher;
+import com.v_engine.activities.CrashActivity;
+import com.v_engine.activities.MainActivity;
+import com.v_engine.audio.AudioFactory;
+import com.v_engine.html5_objects.Console;
+import com.v_engine.html5_objects.WebGLRenderingContext;
+import com.v_engine.misc.Bindings;
+import com.v_engine.misc.FPSCounter;
+import com.v_engine.misc.Files;
+import com.v_engine.misc.GLObjects;
+import com.v_engine.touch.TouchDispatcher;
+
+import java.security.spec.ECField;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -28,6 +35,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
     private Context context;
     private GLSurfaceView glSurfaceView;
     private TouchDispatcher touchDispatcher;
+    private boolean frameSuccess = true;
 
     private FPSCounter fpsCounter = new FPSCounter();
 
@@ -54,39 +62,59 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         Files files = new Files(this.context,runtime,glObjects);
         touchDispatcher = new TouchDispatcher(runtime);
         runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",widthPixels,heightPixels));
-        Bindings.bindObjectToV8(runtime,new Console(),"console");
+        Bindings.bindObjectToV8(runtime,new Console(context),"console");
         Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,files),"_globalGL");
         Bindings.bindObjectToV8(runtime,files,"_files");
+        Bindings.bindObjectToV8(runtime,new AudioFactory(runtime,files),"_audioFactory");
         runtime.executeVoidScript(files.loadAssetAsString("primer.js"));
-        runtime.executeVoidScript(files.loadAssetAsString("out/shapes.js"));
+        try {
+            runtime.executeVoidScript(files.loadAssetAsString("out/"+ MainActivity.assetName +".js"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            String error = ""+e.getMessage();
+            Log.e("APP",error);
+            ((MainActivity)(context)).goToCrashActivity(error);
+            return;
+        }
         renderCallBack = (V8Function)runtime.executeObjectScript("_requestAnimationFrameGlobalCallBack");
         this.runtime = runtime;
 
     }
 
     public void onDrawFrame(GL10 unused) {
+        if (!frameSuccess) return;
         long begin = System.currentTimeMillis();
         //Log.d("APP","begin "+begin);
-        if (renderCallBack!=null) renderCallBack.call(runtime,null);
-        touchDispatcher.nextTick();
-        long end = System.currentTimeMillis();
-        //Log.d("APP","end "+end);
-        //Log.d("APP","passed " + (end - begin));
-        fpsCounter.logFrame();
-        glSurfaceView.requestRender();
+        if (renderCallBack!=null) {
+            try {
+                renderCallBack.call(runtime,null);
+                touchDispatcher.nextTick();
+                long end = System.currentTimeMillis();
+                //Log.d("APP","end "+end);
+                //Log.d("APP","passed " + (end - begin));
+                fpsCounter.logFrame();
+                glSurfaceView.requestRender();
+            } catch (Exception e) {
+                e.printStackTrace();
+                frameSuccess = false;
+                ((MainActivity)(context)).goToCrashActivity(e.getMessage());
+            }
+
+        }
 
     }
 
     @SuppressLint("DefaultLocale")
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-        runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",width,height));
-        runtime.executeVoidScript("_triggerEvent('resize')");
+        if (runtime!=null) {
+            runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",width,height));
+            runtime.executeVoidScript("_triggerEvent('resize')");
+        }
     }
 
     public void dispatchEvent(float x,float y, int touchId, String eventName){
         if (touchDispatcher!=null) touchDispatcher.dispatch(x,y,touchId,eventName);
     }
-
 
 }

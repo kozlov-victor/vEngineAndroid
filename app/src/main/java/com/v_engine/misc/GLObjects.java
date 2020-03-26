@@ -1,4 +1,4 @@
-package com.example.v_engine.misc;
+package com.v_engine.misc;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;

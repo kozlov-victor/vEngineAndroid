@@ -1,8 +1,20 @@
-package com.example.v_engine.html5_objects;
+package com.v_engine.html5_objects;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import com.v_engine.activities.CrashActivity;
+import com.v_engine.activities.MainActivity;
+
 public class Console {
+
+    private Context context;
+
+    public Console(Context context) {
+        this.context = context;
+    }
 
     private String logsToStr(Object ...args){
         if (args==null) return "undefined";
@@ -19,7 +31,9 @@ public class Console {
     }
 
     public void error(Object ...args) {
-        Log.e("VE",logsToStr(args));
+        String error = logsToStr(args);
+        Log.e("VE",error);
+        ((MainActivity)(context)).goToCrashActivity(error);
     }
 
     public void trace(Object ...args) {
