@@ -13,33 +13,43 @@ public class Audio implements MediaPlayer.OnCompletionListener{
 
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private int id;
+    private boolean dirty = false;
     private AudioFactory audioFactory;
 
     public static Audio findById(int id){
         return audios.get(id);
     }
 
-    public Audio(AssetFileDescriptor fileDescriptor,AudioFactory factory) {
+    public Audio(AudioFactory factory) {
         id = cnt++;
         this.audioFactory = factory;
         audios.put(id,this);
-        try {
-            mediaPlayer.setDataSource(fileDescriptor.getFileDescriptor(),fileDescriptor.getStartOffset(),fileDescriptor.getLength());
-            mediaPlayer.prepare();
-            mediaPlayer.setOnCompletionListener(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        mediaPlayer.setOnCompletionListener(this);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        mp.release();
-        audioFactory.onCompletion(id);
+        this.dirty = true;
+        mediaPlayer.reset();
+        audioFactory.maskAsDirty();
     }
 
-    public void play(){
+    public void maskAsClean(){
+        this.dirty = false;
+    }
+
+    public boolean isDirty(){
+        return this.dirty;
+    }
+
+    public void play(AssetFileDescriptor fileDescriptor){
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(fileDescriptor.getFileDescriptor(),fileDescriptor.getStartOffset(),fileDescriptor.getLength());
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         mediaPlayer.start();
     }
 

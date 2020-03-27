@@ -35,6 +35,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
     private Context context;
     private GLSurfaceView glSurfaceView;
     private TouchDispatcher touchDispatcher;
+    private AudioFactory audioFactory;
     private boolean frameSuccess = true;
 
     private FPSCounter fpsCounter = new FPSCounter();
@@ -61,11 +62,12 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         GLObjects glObjects = new GLObjects(runtime);
         Files files = new Files(this.context,runtime,glObjects);
         touchDispatcher = new TouchDispatcher(runtime);
+        audioFactory = new AudioFactory(runtime,files);
         runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",widthPixels,heightPixels));
-        Bindings.bindObjectToV8(runtime,new Console(context),"console");
+        Bindings.bindObjectToV8(runtime,new Console(context,runtime),"console");
         Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,files),"_globalGL");
         Bindings.bindObjectToV8(runtime,files,"_files");
-        Bindings.bindObjectToV8(runtime,new AudioFactory(runtime,files),"_audioFactory");
+        Bindings.bindObjectToV8(runtime,audioFactory,"_audioFactory");
         runtime.executeVoidScript(files.loadAssetAsString("primer.js"));
         try {
             runtime.executeVoidScript(files.loadAssetAsString("out/"+ MainActivity.assetName +".js"));
@@ -89,6 +91,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
             try {
                 renderCallBack.call(runtime,null);
                 touchDispatcher.nextTick();
+                audioFactory.nextTick();
                 long end = System.currentTimeMillis();
                 //Log.d("APP","end "+end);
                 //Log.d("APP","passed " + (end - begin));
