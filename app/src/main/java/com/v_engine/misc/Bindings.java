@@ -17,9 +17,25 @@ public class Bindings {
         Field[] fields = target.getClass().getFields();
         for (Field field : fields) {
             try {
-                obj.add(field.getName(),field.getInt(target));
+                if (field.getType()==int.class) {
+                    obj.add(field.getName(),field.getInt(target));
+                } else if (field.getType()==boolean.class){
+                    obj.add(field.getName(),field.getBoolean(target));
+                } else if (field.getType()==short.class){
+                    obj.add(field.getName(),field.getShort(target));
+                } else if (field.getType()==long.class){
+                    obj.add(field.getName(),field.getLong(target));
+                } else if (field.getType()==byte.class){
+                    obj.add(field.getName(),field.getByte(target));
+                } else if (field.getType()==char.class){
+                    obj.add(field.getName(),field.getChar(target));
+                } else if (field.getType()==double.class){
+                    obj.add(field.getName(),field.getDouble(target));
+                } else if (field.getType()==float.class){
+                    obj.add(field.getName(),field.getFloat(target));
+                } else throw new RuntimeException("can not bind field with type " + field.getType());
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         runtime.add(globalJsName, obj);

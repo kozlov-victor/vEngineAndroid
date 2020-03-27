@@ -4,6 +4,8 @@ import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.util.SparseArray;
 
+import com.eclipsesource.v8.V8Object;
+
 import java.io.IOException;
 
 public class Audio implements MediaPlayer.OnCompletionListener{
@@ -15,14 +17,16 @@ public class Audio implements MediaPlayer.OnCompletionListener{
     private int id;
     private boolean dirty = false;
     private AudioFactory audioFactory;
+    private V8Object v8Audio;
 
     public static Audio findById(int id){
         return audios.get(id);
     }
 
-    public Audio(AudioFactory factory) {
+    public Audio(AudioFactory factory,V8Object v8Audio) {
         id = cnt++;
         this.audioFactory = factory;
+        this.v8Audio = v8Audio;
         audios.put(id,this);
         mediaPlayer.setOnCompletionListener(this);
     }
@@ -40,6 +44,10 @@ public class Audio implements MediaPlayer.OnCompletionListener{
 
     public boolean isDirty(){
         return this.dirty;
+    }
+
+    public V8Object getV8Audio(){
+        return v8Audio;
     }
 
     public void play(AssetFileDescriptor fileDescriptor){

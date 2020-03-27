@@ -6,6 +6,7 @@ import android.util.Log;
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Function;
+import com.eclipsesource.v8.V8Object;
 import com.v_engine.misc.Files;
 
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import java.util.Map;
 public class AudioFactory {
 
     private Files files;
-    private V8Function onAudioEnded;
     private V8 runtime;
     private V8Array args;
     private boolean dirty = false;
@@ -30,8 +30,8 @@ public class AudioFactory {
         args = new V8Array(runtime);
     }
 
-    public int createAudio(){
-        Audio audio = new Audio(this);
+    public int createAudio(V8Object v8Audio){
+        Audio audio = new Audio(this, v8Audio);
         audioList.add(audio);
         return audio.getId();
     }
@@ -51,18 +51,13 @@ public class AudioFactory {
             e.printStackTrace();
             Log.e("APP","can not play audio: " + url);
         }
-
     }
 
     public void stop(int id) {
         Audio.findById(id).stop();
     }
 
-    public void setOnAudioEnded(V8Function callback) {
-        this.onAudioEnded = callback;
-    }
-
-    public void maskAsDirty(){
+    void maskAsDirty(){
         this.dirty = true;
     }
 
@@ -71,9 +66,12 @@ public class AudioFactory {
         for (int i = 0; i < audioList.size(); i++) {
             Audio audio = audioList.get(i);
             if (audio.isDirty()) {
-                if (onAudioEnded != null) {
+                V8Object a = audio.getV8Audio();
+                if (a.isReleased()) continue;
+                V8Function callback = (V8Function) a.getObject("onended");
+                if (callback != null) {
                     args.add("0", audio.getId());
-                    onAudioEnded.call(runtime, args);
+                    callback.call(runtime, args);
                 }
                 audio.maskAsClean();
             }

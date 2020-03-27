@@ -19,23 +19,29 @@ public class Console {
     }
 
     private String stringify(Object object) {
-        if (!(object instanceof V8Object)) return object.toString();
-        V8Object v8Object = (V8Object)object;
-        V8Object json = runtime.getObject("JSON");
+        if (object==null) return null;
+        else if (object instanceof String) return (String)object;
+        else if (object instanceof V8Object) {
+            V8Object v8Object = (V8Object)object;
+            V8Object json = runtime.getObject("JSON");
 
-        V8Array parameters = new V8Array(runtime).push(v8Object);
-        String result = json.executeStringFunction("stringify", parameters);
-        parameters.release();
-        json.release();
-        v8Object.release();
-        return result;
+            V8Array parameters = new V8Array(runtime).push(v8Object);
+            String result = json.executeStringFunction("stringify", parameters);
+            parameters.release();
+            json.release();
+            v8Object.release();
+            return result;
+        } else {
+            return object.toString();
+        }
+
     }
 
     private String logsToStr(Object ...args){
         if (args==null) return "undefined";
         String s = "";
         for (Object arg : args) {
-            String toStr = arg==null?"null":stringify(arg);
+            String toStr = stringify(arg);
             s = s.concat(toStr).concat(" ");
         }
         return s;

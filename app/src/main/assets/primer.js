@@ -101,12 +101,9 @@ _globalGL.texImage2D = (...args)=>{
     class Audio {
         constructor(){
             this._src = null;
-            this._id = _audioFactory.createAudio();
+            this._id = _audioFactory.createAudio(this);
             this._loop = false;
             this.onended = null;
-            _audioFactory.setOnAudioEnded(id=>{
-                if (id===this.id && this.onended) this.onended();
-            });
         }
         set src(val){
             this._src = val;
