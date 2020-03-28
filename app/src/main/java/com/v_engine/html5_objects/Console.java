@@ -26,11 +26,17 @@ public class Console {
             V8Object json = runtime.getObject("JSON");
 
             V8Array parameters = new V8Array(runtime).push(v8Object);
-            String result = json.executeStringFunction("stringify", parameters);
-            parameters.release();
-            json.release();
-            v8Object.release();
-            return result;
+            try {
+                return json.executeStringFunction("stringify", parameters);
+            } catch (Exception e) {
+                return object.toString();
+            } finally {
+                parameters.release();
+                json.release();
+                v8Object.release();
+            }
+
+
         } else {
             return object.toString();
         }

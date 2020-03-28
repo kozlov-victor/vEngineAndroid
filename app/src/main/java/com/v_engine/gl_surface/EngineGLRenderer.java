@@ -1,18 +1,14 @@
 package com.v_engine.gl_surface;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Function;
-import com.v_engine.activities.CrashActivity;
 import com.v_engine.activities.MainActivity;
 import com.v_engine.audio.AudioFactory;
 import com.v_engine.html5_objects.Console;
@@ -22,8 +18,6 @@ import com.v_engine.misc.FPSCounter;
 import com.v_engine.misc.Files;
 import com.v_engine.misc.GLObjects;
 import com.v_engine.touch.TouchDispatcher;
-
-import java.security.spec.ECField;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -54,9 +48,6 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         DisplayMetrics metrics = this.context.getResources().getDisplayMetrics();
         int widthPixels = metrics.widthPixels;
         int heightPixels = metrics.heightPixels;
-
-        Log.d("APP",widthPixels+":widthPixels");
-        Log.d("APP",heightPixels+":heightPixels");
 
         V8 runtime = V8.createV8Runtime();
         GLObjects glObjects = new GLObjects(runtime);

@@ -63,11 +63,15 @@ public class AudioFactory {
 
     public void nextTick() {
         if (!dirty) return;
+        int possibleIndexToDelete = -1;
         for (int i = 0; i < audioList.size(); i++) {
             Audio audio = audioList.get(i);
             if (audio.isDirty()) {
                 V8Object a = audio.getV8Audio();
-                if (a.isReleased()) continue;
+                if (a.isReleased()) {
+                    possibleIndexToDelete = i;
+                    continue;
+                }
                 V8Function callback = (V8Function) a.getObject("onended");
                 if (callback != null) {
                     args.add("0", audio.getId());
@@ -76,6 +80,7 @@ public class AudioFactory {
                 audio.maskAsClean();
             }
         }
+        if (possibleIndexToDelete>-1) audioList.remove(possibleIndexToDelete);
         dirty = false;
     }
 
