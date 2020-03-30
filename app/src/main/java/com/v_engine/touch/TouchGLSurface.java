@@ -3,6 +3,7 @@ package com.v_engine.touch;
 import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
+import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,8 +14,8 @@ public abstract class TouchGLSurface extends GLSurfaceView implements View.OnTou
 
     protected abstract void dispatchEvent(float x, float y, int pointerID, String actionName);
 
-    public TouchGLSurface(Context context) {
-        super(context);
+    public TouchGLSurface(Context context, AttributeSet attributeSet) {
+        super(context,attributeSet);
     }
 
     @Override

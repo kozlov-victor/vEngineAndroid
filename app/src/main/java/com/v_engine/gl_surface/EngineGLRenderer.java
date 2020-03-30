@@ -59,6 +59,8 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,files),"_globalGL");
         Bindings.bindObjectToV8(runtime,files,"_files");
         Bindings.bindObjectToV8(runtime,audioFactory,"_audioFactory");
+        SurfaceResizer surfaceResizer = new SurfaceResizer(context,glSurfaceView);
+        Bindings.bindObjectToV8(runtime,surfaceResizer,"_surfaceResizer");
         runtime.executeVoidScript(files.loadAssetAsString("primer.js"));
         try {
             runtime.executeVoidScript(files.loadAssetAsString("out/"+ MainActivity.assetName +".js"));
@@ -100,11 +102,11 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
 
     @SuppressLint("DefaultLocale")
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-        GLES20.glViewport(0, 0, width, height);
-        if (runtime!=null) {
-            runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",width,height));
-            runtime.executeVoidScript("_triggerEvent('resize')");
-        }
+//        GLES20.glViewport(0, 0, width, height);
+//        if (runtime!=null) {
+//            runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",width,height));
+//            runtime.executeVoidScript("_triggerEvent('resize')");
+//        }
     }
 
     public void dispatchEvent(float x,float y, int touchId, String eventName){

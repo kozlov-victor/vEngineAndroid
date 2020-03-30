@@ -28,7 +28,7 @@ public class MenuActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_menu);
         ListView listView=findViewById(R.id.listView);
         try {
             String[] files = getAssets().list("out");

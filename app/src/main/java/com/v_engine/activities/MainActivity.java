@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 
+import com.example.v_engine.R;
 import com.v_engine.gl_surface.EngineGLSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(new EngineGLSurfaceView(this));
+        setContentView(R.layout.activity_main);
     }
 
     public void goToCrashActivity(String error){

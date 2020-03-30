@@ -1811,8 +1811,8 @@ public class WebGLRenderingContext {
         GLES20.glTexParameterf(target,pname,param);
     }
 
-    public void viewport(int x,int y,int w,int h) {
-        GLES20.glViewport(x,y,w,h);
+    public void viewport(double x,double y,double w,double h) {
+        GLES20.glViewport((int)x,(int)y,(int)w,(int)h);
     }
 
     // c function void texParameterfv ( gLenum target, gLenum pname, const gLfloat *params )

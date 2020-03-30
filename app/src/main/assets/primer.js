@@ -16,11 +16,39 @@ _globalGL.texImage2D = (...args)=>{
         if (_requestAnimationFrameGlobalCallBack===undefined) _requestAnimationFrameGlobalCallBack = fn;
     };
 
+    class CanvasStyle {
+
+        constructor(){
+            this._width = undefined;
+            this._height = undefined;
+        }
+
+        set width(val){
+            this._width = val;
+            console.log('width ',parseInt(val));
+            _surfaceResizer.setWidth(parseInt(val));
+        }
+
+        get width(){
+            return this._width;
+        }
+
+        set height(val){
+            this._height = val;
+            console.log('height ',parseInt(val));
+            _surfaceResizer.setHeight(parseInt(val));
+        }
+
+        get height(){
+            return this._height;
+        }
+    }
+
     class Canvas {
         constructor(){
             this.width = innerWidth;
             this.height = innerHeight;
-            this.style = {};
+            this.style = new CanvasStyle();
             this.ontouchstart = ()=>{};
             this.ontouchmove = ()=>{};
             this.ontouchend = ()=>{};
