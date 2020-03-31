@@ -1,16 +1,12 @@
 package com.v_engine.gl_surface;
 
 import android.content.Context;
-import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.SparseArray;
-import android.view.MotionEvent;
-import android.view.View;
 
-import com.v_engine.touch.TouchGLSurface;
+import com.v_engine.touch.TouchGLSurfaceDelegate;
 
-public class EngineGLSurfaceView extends TouchGLSurface {
+public class EngineGLSurfaceView extends GLSurfaceView {
 
     private EngineGLRenderer engineGLRenderer;
 
@@ -19,12 +15,11 @@ public class EngineGLSurfaceView extends TouchGLSurface {
         setEGLContextClientVersion(2);
         engineGLRenderer = new EngineGLRenderer(context,this);
         setRenderer(engineGLRenderer);
-        setOnTouchListener(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
-    @Override
-    protected void dispatchEvent(float x, float y, int pointerID, String actionName) {
+    public void dispatchEvent(float x, float y, int pointerID, String actionName) {
         engineGLRenderer.dispatchEvent(x, y, pointerID, actionName);
     }
+
 }

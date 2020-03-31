@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.SparseArray;
 
 import com.eclipsesource.v8.V8;
@@ -53,39 +54,38 @@ public class Files {
         }
     }
 
-    public V8Array loadAssetAsBinary(String fileName) {
+    public V8Array loadAssetAsBinary(String fileName) throws IOException {
         fileName = processLocalUrl(fileName);
-        try {
-            InputStream inputStream = context.getAssets().open(fileName);
-            byte[] fileBytes=new byte[inputStream.available()];
-            inputStream.read(fileBytes);
-            inputStream.close();
-            V8Array v8Array = new V8Array(this.runtime);
-            for (byte fileByte : fileBytes) {
-                v8Array.push(fileByte);
-            }
-            return v8Array;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        InputStream inputStream = context.getAssets().open(fileName);
+        byte[] fileBytes=new byte[inputStream.available()];
+        inputStream.read(fileBytes);
+        inputStream.close();
+        V8Array v8Array = new V8Array(this.runtime);
+        for (byte fileByte : fileBytes) {
+            v8Array.push(fileByte);
         }
+        return v8Array;
     }
 
-    public V8Object loadAssetAsImage(String fileName) {
+    private static Bitmap convertString64ToImage(String base64String) {
+        byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+    }
+
+    public V8Object loadAssetAsImage(String fileName) throws IOException {
         fileName = processLocalUrl(fileName);
-        try {
-            int id = cnt++;
+        int id = cnt++;
+        V8Object v8Object = glObjects.create(id);
+        Bitmap bitmap;
+        if (fileName.startsWith("data:image") && fileName.contains(",")) bitmap = convertString64ToImage(fileName.split(",")[1]);
+        else {
             InputStream inputStream = context.getAssets().open(fileName);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            V8Object v8Object = glObjects.create(id);
-            v8Object.add("width",bitmap.getWidth());
-            v8Object.add("height",bitmap.getHeight());
-            bitmapCache.put(id,bitmap);
-            return v8Object;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            bitmap = BitmapFactory.decodeStream(inputStream);
         }
+        v8Object.add("width",bitmap.getWidth());
+        v8Object.add("height",bitmap.getHeight());
+        bitmapCache.put(id,bitmap);
+        return v8Object;
     }
 
     public AssetFileDescriptor loadAssetAsAudio(String fileName) {

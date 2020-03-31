@@ -3,6 +3,7 @@ package com.v_engine.html5_objects;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.os.Build;
+import android.util.Log;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;
@@ -1890,7 +1891,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform1fv(glObjects.getId(location),1,v.getByteBuffer().asFloatBuffer());
+        GLES20.glUniform1fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform1i ( gLint location, gLint x )
@@ -1947,7 +1948,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform2fv(glObjects.getId(location),1,v.getByteBuffer().asFloatBuffer());
+        GLES20.glUniform2fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform2i ( gLint location, gLint x, gLint y )
@@ -2006,7 +2007,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform3fv(glObjects.getId(location),1,v.getByteBuffer().asFloatBuffer());
+        GLES20.glUniform3fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform3i ( gLint location, gLint x, gLint y, gLint z )
@@ -2067,7 +2068,7 @@ public class WebGLRenderingContext {
             V8Object location,
             V8TypedArray v
     ) {
-        GLES20.glUniform4fv(glObjects.getId(location),1,v.getByteBuffer().asFloatBuffer());
+        GLES20.glUniform4fv(glObjects.getId(location),v.length(),v.getByteBuffer().asFloatBuffer());
     }
 
     // c function void uniform4i ( gLint location, gLint x, gLint y, gLint z, gLint w )

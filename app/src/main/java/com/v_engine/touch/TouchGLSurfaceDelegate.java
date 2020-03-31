@@ -1,24 +1,30 @@
 package com.v_engine.touch;
 
-import android.content.Context;
 import android.graphics.PointF;
-import android.opengl.GLSurfaceView;
-import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
-public abstract class TouchGLSurface extends GLSurfaceView implements View.OnTouchListener  {
+import com.v_engine.gl_surface.EngineGLSurfaceView;
+
+public class TouchGLSurfaceDelegate  {
+
+    private final String TOUCH_START = "ontouchstart";
+    private final String TOUCH_MOVE  = "ontouchmove";
+    private final String TOUCH_END   = "ontouchend";
 
     private SparseArray<PointF> mActivePointers = new SparseArray<>();
+    private EngineGLSurfaceView glSurfaceView;
 
-    protected abstract void dispatchEvent(float x, float y, int pointerID, String actionName);
-
-    public TouchGLSurface(Context context, AttributeSet attributeSet) {
-        super(context,attributeSet);
+    public TouchGLSurfaceDelegate(EngineGLSurfaceView glSurfaceView) {
+        this.glSurfaceView = glSurfaceView;
     }
 
-    @Override
+    private void dispatchEvent(float x, float y, int pointerID, String actionName) {
+        glSurfaceView.dispatchEvent(x, y, pointerID, actionName);
+    }
+
+
     public boolean onTouch(View v, MotionEvent e) {
 
         int pointerIndex = e.getActionIndex();
@@ -33,7 +39,7 @@ public abstract class TouchGLSurface extends GLSurfaceView implements View.OnTou
                 f.x = e.getX(pointerIndex);
                 f.y = e.getY(pointerIndex);
                 mActivePointers.put(pointerId, f);
-                dispatchEvent(f.x,f.y, pointerId,"ontouchstart");
+                dispatchEvent(f.x,f.y, pointerId, TOUCH_START);
                 break;
             }
             case MotionEvent.ACTION_MOVE: { // a pointer was moved
@@ -43,7 +49,7 @@ public abstract class TouchGLSurface extends GLSurfaceView implements View.OnTou
                     if (point != null) {
                         point.x = e.getX(i);
                         point.y = e.getY(i);
-                        dispatchEvent(point.x, point.y, id,"ontouchmove");
+                        dispatchEvent(point.x, point.y, id, TOUCH_MOVE);
                     }
                 }
                 break;
@@ -52,7 +58,7 @@ public abstract class TouchGLSurface extends GLSurfaceView implements View.OnTou
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_CANCEL: {
                 mActivePointers.remove(pointerId);
-                dispatchEvent(e.getX(pointerIndex), e.getX(pointerIndex), pointerId,"ontouchend");
+                dispatchEvent(e.getX(pointerIndex), e.getX(pointerIndex), pointerId, TOUCH_END);
                 break;
             }
         }
