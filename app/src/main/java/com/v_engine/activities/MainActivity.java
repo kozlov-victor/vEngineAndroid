@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     public static String assetName;
     private TouchGLSurfaceDelegate touchGLSurfaceDelegate;
+    private EngineGLSurfaceView glSurfaceView;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        EngineGLSurfaceView glSurfaceView = findViewById(R.id.engine_gl_surface_view);
+        glSurfaceView = findViewById(R.id.engine_gl_surface_view);
         touchGLSurfaceDelegate = new TouchGLSurfaceDelegate(glSurfaceView);
         FrameLayout frameLayout = findViewById(R.id.engine_gl_frame_view);
         frameLayout.setOnTouchListener(this);
@@ -50,4 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         finish();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        glSurfaceView.destroy();
+    }
 }

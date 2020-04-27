@@ -88,4 +88,11 @@ public class AudioFactory {
         dirty = false;
     }
 
+    public void destroy() {
+        for (int i = 0; i < audioList.size(); i++) {
+            Audio audio = audioList.get(i);
+            audio.destroy();
+        }
+    }
+
 }

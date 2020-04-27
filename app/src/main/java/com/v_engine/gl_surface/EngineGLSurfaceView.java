@@ -22,4 +22,8 @@ public class EngineGLSurfaceView extends GLSurfaceView {
         engineGLRenderer.dispatchEvent(x, y, pointerID, actionName);
     }
 
+    public void destroy(){
+        engineGLRenderer.destroy();
+    }
+
 }

@@ -73,4 +73,9 @@ public class Audio implements MediaPlayer.OnCompletionListener{
         return id;
     }
 
+    public void destroy(){
+        mediaPlayer.stop();
+        mediaPlayer.release();
+    }
+
 }

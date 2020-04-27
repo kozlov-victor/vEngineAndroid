@@ -116,4 +116,9 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         if (touchDispatcher!=null) touchDispatcher.dispatch(x,y,touchId,eventName);
     }
 
+    public void destroy(){
+        frameSuccess = false;
+        audioFactory.destroy();
+    }
+
 }
