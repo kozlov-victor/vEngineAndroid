@@ -17,6 +17,7 @@ import com.v_engine.misc.Bindings;
 import com.v_engine.misc.FPSCounter;
 import com.v_engine.misc.Files;
 import com.v_engine.misc.GLObjects;
+import com.v_engine.misc.event_queue.EventQueue;
 import com.v_engine.touch.TouchDispatcher;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -33,6 +34,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
     private boolean frameSuccess = true;
 
     private FPSCounter fpsCounter = new FPSCounter();
+    private EventQueue eventQueue = new EventQueue();
 
     public EngineGLRenderer(android.content.Context context, GLSurfaceView glSurfaceView) {
         this.context = context;
@@ -51,7 +53,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
 
         V8 runtime = V8.createV8Runtime();
         GLObjects glObjects = new GLObjects(runtime);
-        Files files = new Files(this.context,runtime,glObjects);
+        Files files = new Files(this.context,runtime,glObjects,eventQueue);
         touchDispatcher = new TouchDispatcher(runtime);
         audioFactory = new AudioFactory(runtime,files);
         runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",widthPixels,heightPixels));
@@ -85,6 +87,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
                 renderCallBack.call(runtime,null);
                 touchDispatcher.nextTick();
                 audioFactory.nextTick();
+                eventQueue.nextTick();
                 long end = System.currentTimeMillis();
                 //Log.d("APP","end "+end);
                 //Log.d("APP","passed " + (end - begin));

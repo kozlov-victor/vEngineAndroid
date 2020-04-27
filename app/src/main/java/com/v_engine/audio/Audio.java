@@ -38,6 +38,10 @@ public class Audio implements MediaPlayer.OnCompletionListener{
         audioFactory.maskAsDirty();
     }
 
+    public void setLoop(boolean loop) {
+        mediaPlayer.setLooping(loop);
+    }
+
     public void maskAsClean(){
         this.dirty = false;
     }

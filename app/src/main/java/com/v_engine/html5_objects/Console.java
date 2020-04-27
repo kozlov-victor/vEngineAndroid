@@ -29,14 +29,13 @@ public class Console {
             try {
                 return json.executeStringFunction("stringify", parameters);
             } catch (Exception e) {
+                e.printStackTrace();
                 return object.toString();
             } finally {
                 parameters.release();
                 json.release();
                 v8Object.release();
             }
-
-
         } else {
             return object.toString();
         }
@@ -45,6 +44,7 @@ public class Console {
 
     private String logsToStr(Object ...args){
         if (args==null) return "undefined";
+        Log.e("VE",""+args[0]);
         String s = "";
         for (Object arg : args) {
             String toStr = stringify(arg);

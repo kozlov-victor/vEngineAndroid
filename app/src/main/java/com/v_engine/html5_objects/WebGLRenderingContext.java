@@ -3,7 +3,6 @@ package com.v_engine.html5_objects;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.os.Build;
-import android.util.Log;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;

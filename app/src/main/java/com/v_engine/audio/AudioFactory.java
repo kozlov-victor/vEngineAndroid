@@ -53,6 +53,10 @@ public class AudioFactory {
         }
     }
 
+    public void setLoop(int id, boolean loop) {
+        Audio.findById(id).setLoop(loop);
+    }
+
     public void stop(int id) {
         Audio.findById(id).stop();
     }

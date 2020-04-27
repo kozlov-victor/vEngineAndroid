@@ -98,11 +98,12 @@ _globalGL.texImage2D = (...args)=>{
 
         _loadData(){
             if (this._src!==null && this._onload!==null) {
-                var imgData = _files.loadAssetAsImage(this._src);
-                this.id = imgData.id;
-                this.width = imgData.width;
-                this.height = imgData.height;
-                this._onload();
+                _files.loadAssetAsImage(this._src,(imgData)=>{
+                    this.id = imgData.id;
+                    this.width = imgData.width;
+                    this.height = imgData.height;
+                    this._onload();
+                });
             }
         }
 
@@ -138,6 +139,13 @@ _globalGL.texImage2D = (...args)=>{
         }
         get src(){
             return this._src;
+        }
+        set loop(val){
+            _audioFactory.setLoop(this._id,this._loop);
+            this._loop = val;
+        }
+        get loop(){
+            return this._loop;
         }
         play(){
              _audioFactory.play(this._id,this._src);
