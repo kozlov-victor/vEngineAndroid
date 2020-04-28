@@ -19,7 +19,7 @@ public class Console {
     }
 
     private String stringify(Object object) {
-        if (object==null) return null;
+        if (object==null) return "null";
         else if (object instanceof String) return (String)object;
         else if (object instanceof V8Object) {
             V8Object v8Object = (V8Object)object;
@@ -27,7 +27,9 @@ public class Console {
 
             V8Array parameters = new V8Array(runtime).push(v8Object);
             try {
-                return json.executeStringFunction("stringify", parameters);
+                String stringified = json.executeStringFunction("stringify", parameters);
+                if ("{}".equals(stringified)) return v8Object.toString();
+                else return stringified;
             } catch (Exception e) {
                 e.printStackTrace();
                 return object.toString();

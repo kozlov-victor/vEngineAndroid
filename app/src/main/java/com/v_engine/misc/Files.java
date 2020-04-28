@@ -42,34 +42,80 @@ public class Files {
         this.eventQueue = eventQueue;
     }
 
-    public String loadAssetAsString(String fileName) {
-        fileName = processLocalUrl(fileName);
+    public String loadAssetAsStringSync(String fileName){
+        String fileNameProcessed = processLocalUrl(fileName);
+        StringBuilder out= new StringBuilder();
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(context.getAssets().open(fileName)));
-            StringBuilder out= new StringBuilder();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(context.getAssets().open(fileNameProcessed)));
             String eachline = bufferedReader.readLine();
             while (eachline != null) {
                 out.append(eachline);
                 out.append("\n");
                 eachline = bufferedReader.readLine();
             }
-            return out.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return out.toString();
     }
 
-    public V8Array loadAssetAsBinary(String fileName) throws IOException {
-        fileName = processLocalUrl(fileName);
-        InputStream inputStream = context.getAssets().open(fileName);
-        byte[] fileBytes=new byte[inputStream.available()];
-        inputStream.read(fileBytes);
-        inputStream.close();
-        V8Array v8Array = new V8Array(this.runtime);
-        for (byte fileByte : fileBytes) {
-            v8Array.push(fileByte);
-        }
-        return v8Array;
+    public void loadAssetAsString(final String fileName, V8Function success) {
+        final V8Function successTwined = success.twin();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String result = loadAssetAsStringSync(fileName);
+                eventQueue.addTask(new EventQueueTask() {
+                    @Override
+                    public void doTask() {
+                        V8Array args = new V8Array(runtime);
+                        args.push(result);
+                        successTwined.call(runtime,args);
+                        successTwined.release();
+                    }
+                });
+
+            }
+        }).start();
+
+
+
+
+    }
+
+    public void loadAssetAsBinary(final String fileName, V8Function success)  {
+        final V8Function successTwined = success.twin();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String fileNameProcessed = processLocalUrl(fileName);
+                InputStream inputStream = null;
+                try {
+                    inputStream = context.getAssets().open(fileNameProcessed);
+                    final byte[] fileBytes=new byte[inputStream.available()];
+                    inputStream.read(fileBytes);
+                    inputStream.close();
+                    eventQueue.addTask(new EventQueueTask() {
+                        @Override
+                        public void doTask() {
+                            V8Array bytes = new V8Array(runtime);
+                            for (byte fileByte : fileBytes) {
+                                bytes.push(fileByte);
+                            }
+                            V8Array args = new V8Array(runtime);
+                            args.push(bytes);
+                            successTwined.call(runtime,args);
+                            successTwined.release();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+
     }
 
     private static Bitmap convertString64ToImage(String base64String) {

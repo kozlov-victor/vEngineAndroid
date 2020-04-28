@@ -63,9 +63,9 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         Bindings.bindObjectToV8(runtime,audioFactory,"_audioFactory");
         SurfaceResizer surfaceResizer = new SurfaceResizer(context,glSurfaceView);
         Bindings.bindObjectToV8(runtime,surfaceResizer,"_surfaceResizer");
-        runtime.executeVoidScript(files.loadAssetAsString("primer.js"));
+        runtime.executeVoidScript(files.loadAssetAsStringSync("primer.js"));
         try {
-            runtime.executeVoidScript(files.loadAssetAsString("out/"+ MainActivity.assetName +".js"));
+            runtime.executeVoidScript(files.loadAssetAsStringSync("out/"+ MainActivity.assetName +".js"));
         } catch (Exception e) {
             e.printStackTrace();
             String error = ""+e.getMessage();

@@ -159,23 +159,6 @@ _globalGL.texImage2D = (...args)=>{
 
     }
 
-    const readAsBin = (url)=>{
-        try {
-            return _files.loadAssetAsBinary(url);
-        } catch (e) {
-            console.error('readAsBin error: ' + url + " " + e);
-            throw e;
-        }
-    };
-
-    const readAsText = (url)=>{
-        try {
-            return _files.loadAssetAsString(url);
-        } catch (e) {
-            console.error('readAsText error: ' + url + " " + e);
-            throw e;
-        }
-    };
 
     class XMLHttpRequest {
 
@@ -194,13 +177,18 @@ _globalGL.texImage2D = (...args)=>{
 
         send(){
             const currUrl = this.url.split('?')[0];
-            const resp = (this.responseType==='blob' || this.responseType==='arraybuffer')?readAsBin(currUrl):readAsText(currUrl);
-            this.readyState = 4;
-            this.status = 200;
-            this.response = resp;
-            if (resp && resp.toUpperCase) this.responseText = resp;
-            this.onload && this.onload();
-            this.onreadystatechange && this.onreadystatechange();
+            const successCallback = (resp)=>{
+                this.readyState = 4;
+                this.status = 200;
+                this.response = resp;
+                if (resp && resp.toUpperCase) this.responseText = resp;
+                this.onload && this.onload();
+                this.onreadystatechange && this.onreadystatechange();
+            }
+            (this.responseType==='blob' || this.responseType==='arraybuffer')?
+                _files.loadAssetAsBinary(currUrl,successCallback):
+                _files.loadAssetAsString(currUrl,successCallback);
+
         }
 
         getResponseHeader(){
