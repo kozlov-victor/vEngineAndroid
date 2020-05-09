@@ -1655,12 +1655,12 @@ public class WebGLRenderingContext {
     // c function void scissor ( gLint x, gLint y, gLsizei width, gLsizei height )
 
     public void scissor(
-            double x,
-            double y,
-            double width,
-            double height
+            int x,
+            int y,
+            int width,
+            int height
     ) {
-        GLES20.glScissor((int)x,(int)y,(int)width,(int)height);
+        GLES20.glScissor(x,y,width,height);
     }
 
     // c function void shaderBinary ( gLsizei n, const gLuint *shaders, gLenum binaryformat, const gLvoid *binary, gLsizei length )
@@ -1780,7 +1780,7 @@ public class WebGLRenderingContext {
             int type,
             V8Object source
     ){
-        GLUtils.texImage2D(target,level,files.getCachedBitmap((V8Object)source),0);
+        GLUtils.texImage2D(target,level,files.getCachedBitmap(source),0);
     }
 
 
@@ -1811,8 +1811,8 @@ public class WebGLRenderingContext {
         GLES20.glTexParameterf(target,pname,param);
     }
 
-    public void viewport(double x,double y,double w,double h) {
-        GLES20.glViewport((int)x,(int)y,(int)w,(int)h);
+    public void viewport(int x,int y,int w,int h) {
+        GLES20.glViewport(x,y,w,h);
     }
 
     // c function void texParameterfv ( gLenum target, gLenum pname, const gLfloat *params )
@@ -2315,40 +2315,5 @@ public class WebGLRenderingContext {
     ) {
         GLES20.glVertexAttribPointer(indx,size,type,normalized,stride,offset);
     }
-
-//    public void vertexAttribPointer(
-//            int indx,
-//            int size,
-//            int type,
-//            int normalized,
-//            int stride,
-//            int offset
-//    ) {
-//        vertexAttribPointer(indx,size,type,normalized==1,stride,offset);
-//    }
-
-    // c function void vertexAttribPointer ( gLuint indx, gLint size, gLenum type, gLboolean normalized, gLsizei stride, const gLvoid *ptr )
-
-//    private void vertexAttribPointerBounds(
-//            int indx,
-//            int size,
-//            int type,
-//            boolean normalized,
-//            int stride,
-//            java.nio.Buffer ptr,
-//            int remaining
-//    ) {
-//    }
-//
-//    public void vertexAttribPointer(
-//            int indx,
-//            int size,
-//            int type,
-//            boolean normalized,
-//            int stride,
-//            java.nio.Buffer ptr
-//    ) {
-//
-//    }
 
 }

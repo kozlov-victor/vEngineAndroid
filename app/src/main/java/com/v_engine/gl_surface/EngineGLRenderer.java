@@ -34,7 +34,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
     private boolean frameSuccess = true;
 
     private FPSCounter fpsCounter = new FPSCounter();
-    private EventQueue eventQueue = new EventQueue();
+    private EventQueue eventQueue;
 
     public EngineGLRenderer(android.content.Context context, GLSurfaceView glSurfaceView) {
         this.context = context;
@@ -53,6 +53,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
 
         V8 runtime = V8.createV8Runtime();
         GLObjects glObjects = new GLObjects(runtime);
+        eventQueue = new EventQueue(runtime);
         Files files = new Files(this.context,runtime,glObjects,eventQueue);
         touchDispatcher = new TouchDispatcher(runtime);
         audioFactory = new AudioFactory(runtime,files);
@@ -63,6 +64,7 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         Bindings.bindObjectToV8(runtime,audioFactory,"_audioFactory");
         SurfaceResizer surfaceResizer = new SurfaceResizer(context,glSurfaceView);
         Bindings.bindObjectToV8(runtime,surfaceResizer,"_surfaceResizer");
+        Bindings.bindObjectToV8(runtime,eventQueue,"_eventQueue");
         runtime.executeVoidScript(files.loadAssetAsStringSync("primer.js"));
         try {
             runtime.executeVoidScript(files.loadAssetAsStringSync("out/"+ MainActivity.assetName +".js"));

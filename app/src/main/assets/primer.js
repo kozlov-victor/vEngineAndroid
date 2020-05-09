@@ -25,7 +25,6 @@ _globalGL.texImage2D = (...args)=>{
 
         set width(val){
             this._width = val;
-            console.log('width ',parseInt(val));
             _surfaceResizer.setWidth(parseInt(val));
         }
 
@@ -35,7 +34,6 @@ _globalGL.texImage2D = (...args)=>{
 
         set height(val){
             this._height = val;
-            console.log('height ',parseInt(val));
             _surfaceResizer.setHeight(parseInt(val));
         }
 
@@ -91,20 +89,25 @@ _globalGL.texImage2D = (...args)=>{
             this.id = null;
             this._src = null;
             this._onload = null;
+            this.onerror = null;
             this._buffer = null;
             this.width = 0;
             this.height = 0;
         }
 
         _loadData(){
-            if (this._src!==null && this._onload!==null) {
-                _files.loadAssetAsImage(this._src,(imgData)=>{
-                    this.id = imgData.id;
-                    this.width = imgData.width;
-                    this.height = imgData.height;
-                    this._onload();
-                });
-            }
+            _eventQueue.executeOnNextTask(()=>{
+                _files.loadAssetAsImage(
+                    this._src,
+                    (imgData)=>{
+                        this.id = imgData.id;
+                        this.width = imgData.width;
+                        this.height = imgData.height;
+                        this._onload();
+                    },
+                    this.onerror
+                );
+            });
         }
 
         set src(val){
@@ -118,7 +121,6 @@ _globalGL.texImage2D = (...args)=>{
 
         set onload(cb) {
             this._onload = cb;
-            this._loadData();
         }
 
         get onload(){
@@ -141,7 +143,7 @@ _globalGL.texImage2D = (...args)=>{
             return this._src;
         }
         set loop(val){
-            _audioFactory.setLoop(this._id,this._loop);
+            _audioFactory.setLoop(this._id,val);
             this._loop = val;
         }
         get loop(){
@@ -184,10 +186,13 @@ _globalGL.texImage2D = (...args)=>{
                 if (resp && resp.toUpperCase) this.responseText = resp;
                 this.onload && this.onload();
                 this.onreadystatechange && this.onreadystatechange();
-            }
+            };
+            const errorCallback = (e)=>{
+                console.error(e);
+            };
             (this.responseType==='blob' || this.responseType==='arraybuffer')?
-                _files.loadAssetAsBinary(currUrl,successCallback):
-                _files.loadAssetAsString(currUrl,successCallback);
+                _files.loadAssetAsBinary(currUrl,successCallback,errorCallback):
+                _files.loadAssetAsString(currUrl,successCallback,errorCallback);
 
         }
 

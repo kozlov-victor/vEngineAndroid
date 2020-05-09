@@ -59,32 +59,43 @@ public class Files {
         return out.toString();
     }
 
-    public void loadAssetAsString(final String fileName, V8Function success) {
+    public void loadAssetAsString(final String fileName, V8Function success, final V8Function error) {
         final V8Function successTwined = success.twin();
+        final V8Function errorTwined = error.twin();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final String result = loadAssetAsStringSync(fileName);
                 eventQueue.addTask(new EventQueueTask() {
                     @Override
                     public void doTask() {
-                        V8Array args = new V8Array(runtime);
-                        args.push(result);
-                        successTwined.call(runtime,args);
-                        successTwined.release();
+
+                        try {
+                            final String result = loadAssetAsStringSync(fileName);
+
+                            V8Array args = new V8Array(runtime);
+                            args.push(result);
+                            successTwined.call(runtime,args);
+                            successTwined.release();
+                            args.release();
+                        } catch (Exception e) {
+                            V8Array args = new V8Array(runtime);
+                            args.push(e.getMessage());
+                            errorTwined.call(runtime,args);
+                            errorTwined.release();
+                            args.release();
+                        }
+
                     }
                 });
 
             }
         }).start();
 
-
-
-
     }
 
-    public void loadAssetAsBinary(final String fileName, V8Function success)  {
+    public void loadAssetAsBinary(final String fileName, V8Function success, final V8Function error)  {
         final V8Function successTwined = success.twin();
+        final V8Function errorTwined = error.twin();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -106,9 +117,15 @@ public class Files {
                             args.push(bytes);
                             successTwined.call(runtime,args);
                             successTwined.release();
+                            args.release();
                         }
                     });
                 } catch (IOException e) {
+                    V8Array args = new V8Array(runtime);
+                    args.push(e.getMessage());
+                    errorTwined.call(runtime,args);
+                    errorTwined.release();
+                    args.release();
                     e.printStackTrace();
                 }
 
@@ -123,27 +140,40 @@ public class Files {
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
     }
 
-    public void loadAssetAsImage(final String fileName, final V8Function success) {
+    public void loadAssetAsImage(final String fileName, final V8Function success,final V8Function error) {
         final V8Function successTwined = success.twin();
+        final V8Function errorTwined   = error==null?null:error.twin();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String fileNameProcessed = processLocalUrl(fileName);
-                final Bitmap bitmap;
-                if (fileNameProcessed.startsWith("data:image") && fileNameProcessed.contains(",")) bitmap = convertString64ToImage(fileNameProcessed.split(",")[1]);
-                else {
-                    InputStream inputStream;
-                    try {
-                        inputStream = context.getAssets().open(fileNameProcessed);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
-                    }
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-                }
                 eventQueue.addTask(new EventQueueTask() {
                     @Override
                     public void doTask() {
+
+                        String fileNameProcessed = processLocalUrl(fileName);
+                        final Bitmap bitmap;
+                        if (fileNameProcessed.startsWith("data:image") && fileNameProcessed.contains(",")) bitmap = convertString64ToImage(fileNameProcessed.split(",")[1]);
+                        else {
+                            InputStream inputStream;
+                            try {
+                                inputStream = context.getAssets().open(fileNameProcessed);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                if (errorTwined!=null) {
+                                    V8Array args = new V8Array(runtime);
+                                    args.push(e.getMessage());
+                                    errorTwined.call(runtime,args);
+                                    errorTwined.release();
+                                    args.release();
+                                    return;
+                                } else {
+                                    throw new RuntimeException(e);
+                                }
+
+                            }
+                            bitmap = BitmapFactory.decodeStream(inputStream);
+                        }
+
                         int id = cnt++;
                         V8Object v8Object = glObjects.create(id);
                         v8Object.add("width",bitmap.getWidth());
@@ -153,6 +183,7 @@ public class Files {
                         args.push(v8Object);
                         successTwined.call(runtime,args);
                         successTwined.release();
+                        args.release();
                     }
                 });
             }

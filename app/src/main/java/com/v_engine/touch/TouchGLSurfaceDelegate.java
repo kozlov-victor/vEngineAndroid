@@ -58,7 +58,7 @@ public class TouchGLSurfaceDelegate  {
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_CANCEL: {
                 mActivePointers.remove(pointerId);
-                dispatchEvent(e.getX(pointerIndex), e.getX(pointerIndex), pointerId, TOUCH_END);
+                dispatchEvent(e.getX(pointerIndex), e.getY(pointerIndex), pointerId, TOUCH_END);
                 break;
             }
         }
