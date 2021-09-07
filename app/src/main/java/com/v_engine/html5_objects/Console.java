@@ -65,6 +65,10 @@ public class Console {
         ((MainActivity)(context)).goToCrashActivity(error);
     }
 
+    public void warn(Object ...args) {
+        Log.i("VE",logsToStr(args));
+    }
+
     public void trace(Object ...args) {
         Log.d("VE",logsToStr(args));
     }

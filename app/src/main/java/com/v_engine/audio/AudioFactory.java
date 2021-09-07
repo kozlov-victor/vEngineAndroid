@@ -61,6 +61,10 @@ public class AudioFactory {
         Audio.findById(id).stop();
     }
 
+    public void pause(int id) {
+        Audio.findById(id).pause();
+    }
+
     void maskAsDirty(){
         this.dirty = true;
     }

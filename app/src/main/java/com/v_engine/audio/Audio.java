@@ -69,6 +69,10 @@ public class Audio implements MediaPlayer.OnCompletionListener{
         mediaPlayer.stop();
     }
 
+    public void pause(){
+        mediaPlayer.pause();
+    }
+
     public int getId(){
         return id;
     }

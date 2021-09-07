@@ -155,6 +155,9 @@ _globalGL.texImage2D = (...args)=>{
         stop(){
              _audioFactory.stop(this._id);
         }
+        pause(){
+             _audioFactory.pause(this._id);
+        }
         canPlayType(type){
             return true;
         }
