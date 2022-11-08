@@ -1,21 +1,21 @@
 package com.v_engine.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import com.example.v_engine.R;
 
-public class CrashActivity extends AppCompatActivity {
+public class CrashActivity extends Activity {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crash);
         String error = getIntent().getStringExtra("error");
-        TextView textView = findViewById(R.id.textViewCrash);
+        TextView textView = (TextView)findViewById(R.id.textViewCrash);
         textView.setText(error);
     }
 }

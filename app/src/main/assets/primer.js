@@ -16,6 +16,10 @@ _globalGL.texImage2D = (...args)=>{
         if (_requestAnimationFrameGlobalCallBack===undefined) _requestAnimationFrameGlobalCallBack = fn;
     };
 
+    window.onerror = (e)=>{
+        console.error(e);
+    }
+
     class CanvasStyle {
 
         constructor(){
@@ -236,6 +240,7 @@ _globalGL.texImage2D = (...args)=>{
     }
     window.setTimeout = ()=>{};
     window.setInterval = ()=>{};
+    window.scrollTo = ()=>{};
 
 })();
 

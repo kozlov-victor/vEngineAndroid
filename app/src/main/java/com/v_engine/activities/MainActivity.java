@@ -1,6 +1,7 @@
 package com.v_engine.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -8,13 +9,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
+
 
 import com.example.v_engine.R;
 import com.v_engine.gl_surface.EngineGLSurfaceView;
 import com.v_engine.touch.TouchGLSurfaceDelegate;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
+public class MainActivity extends Activity implements View.OnTouchListener {
 
     public static String assetName;
     private TouchGLSurfaceDelegate touchGLSurfaceDelegate;
@@ -31,9 +32,9 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        glSurfaceView = findViewById(R.id.engine_gl_surface_view);
+        glSurfaceView = (EngineGLSurfaceView)findViewById(R.id.engine_gl_surface_view);
         touchGLSurfaceDelegate = new TouchGLSurfaceDelegate(glSurfaceView);
-        FrameLayout frameLayout = findViewById(R.id.engine_gl_frame_view);
+        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.engine_gl_frame_view);
         frameLayout.setOnTouchListener(this);
     }
 
