@@ -16,6 +16,7 @@ import java.nio.IntBuffer;
 public class WebGLRenderingContext {
 
     public final int UNPACK_PREMULTIPLY_ALPHA_WEBGL = -1;
+    public final int UNPACK_FLIP_Y_WEBGL = -1;
     public final int STATIC_DRAW = GLES20.GL_STATIC_DRAW;
     public final int DYNAMIC_DRAW = GLES20.GL_DYNAMIC_DRAW;
 

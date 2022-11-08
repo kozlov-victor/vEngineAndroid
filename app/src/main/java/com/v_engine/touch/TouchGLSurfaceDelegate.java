@@ -9,9 +9,9 @@ import com.v_engine.gl_surface.EngineGLSurfaceView;
 
 public class TouchGLSurfaceDelegate  {
 
-    private final String TOUCH_START = "ontouchstart";
-    private final String TOUCH_MOVE  = "ontouchmove";
-    private final String TOUCH_END   = "ontouchend";
+    private final static String TOUCH_START = "ontouchstart";
+    private final static String TOUCH_MOVE  = "ontouchmove";
+    private final static String TOUCH_END   = "ontouchend";
 
     private SparseArray<PointF> mActivePointers = new SparseArray<>();
     private EngineGLSurfaceView glSurfaceView;
