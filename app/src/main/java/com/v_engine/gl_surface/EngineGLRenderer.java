@@ -15,7 +15,7 @@ import com.v_engine.html5_objects.Console;
 import com.v_engine.html5_objects.WebGLRenderingContext;
 import com.v_engine.misc.Bindings;
 import com.v_engine.misc.FPSCounter;
-import com.v_engine.misc.Files;
+import com.v_engine.resource_manager.FilesResourceManager;
 import com.v_engine.misc.GLObjects;
 import com.v_engine.misc.event_queue.EventQueue;
 import com.v_engine.touch.TouchDispatcher;
@@ -54,20 +54,20 @@ public class EngineGLRenderer implements GLSurfaceView.Renderer {
         V8 runtime = V8.createV8Runtime();
         GLObjects glObjects = new GLObjects(runtime);
         eventQueue = new EventQueue(runtime);
-        Files files = new Files(this.context,runtime,glObjects,eventQueue);
+        FilesResourceManager filesResourceManager = new FilesResourceManager(this.context,runtime,glObjects,eventQueue);
         touchDispatcher = new TouchDispatcher(runtime);
-        audioFactory = new AudioFactory(runtime,files);
+        audioFactory = new AudioFactory(runtime,filesResourceManager);
         runtime.executeVoidScript(String.format("innerWidth = %d;innerHeight = %d;",widthPixels,heightPixels));
         Bindings.bindObjectToV8(runtime,new Console(context,runtime),"console");
-        Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,files),"_globalGL");
-        Bindings.bindObjectToV8(runtime,files,"_files");
+        Bindings.bindObjectToV8(runtime,new WebGLRenderingContext(runtime,glObjects,filesResourceManager),"_globalGL");
+        Bindings.bindObjectToV8(runtime,filesResourceManager,"_files");
         Bindings.bindObjectToV8(runtime,audioFactory,"_audioFactory");
         SurfaceResizer surfaceResizer = new SurfaceResizer(context,glSurfaceView);
         Bindings.bindObjectToV8(runtime,surfaceResizer,"_surfaceResizer");
         Bindings.bindObjectToV8(runtime,eventQueue,"_eventQueue");
-        runtime.executeVoidScript(files.loadAssetAsStringSync("primer.js"));
+        runtime.executeVoidScript(filesResourceManager.loadAssetAsStringSync("primer.js"));
         try {
-            runtime.executeVoidScript(files.loadAssetAsStringSync("out/"+ MainActivity.assetName +".js"));
+            runtime.executeVoidScript(filesResourceManager.loadAssetAsStringSync("out/"+ MainActivity.assetName +".js"));
         } catch (Exception e) {
             e.printStackTrace();
             String error = ""+e.getMessage();

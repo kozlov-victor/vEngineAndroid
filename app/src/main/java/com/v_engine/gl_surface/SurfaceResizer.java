@@ -3,7 +3,6 @@ package com.v_engine.gl_surface;
 import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 import android.view.ViewGroup;
 
 public class SurfaceResizer {
@@ -17,24 +16,18 @@ public class SurfaceResizer {
     }
 
     public void setWidth(final int width){
-        ((Activity)context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup.LayoutParams params = surfaceView.getLayoutParams();
-                params.width = width;
-                surfaceView.setLayoutParams(params);
-            }
+        ((Activity)context).runOnUiThread(() -> {
+            ViewGroup.LayoutParams params = surfaceView.getLayoutParams();
+            params.width = width;
+            surfaceView.setLayoutParams(params);
         });
     }
 
     public void setHeight(final int height){
-        ((Activity)context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup.LayoutParams params = surfaceView.getLayoutParams();
-                params.height = height;
-                surfaceView.setLayoutParams(params);
-            }
+        ((Activity)context).runOnUiThread(() -> {
+            ViewGroup.LayoutParams params = surfaceView.getLayoutParams();
+            params.height = height;
+            surfaceView.setLayoutParams(params);
         });
     }
 

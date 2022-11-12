@@ -8,7 +8,7 @@ import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Object;
 import com.eclipsesource.v8.V8TypedArray;
 import com.eclipsesource.v8.V8Value;
-import com.v_engine.misc.Files;
+import com.v_engine.resource_manager.FilesResourceManager;
 import com.v_engine.misc.GLObjects;
 
 import java.nio.IntBuffer;
@@ -329,9 +329,9 @@ public class WebGLRenderingContext {
     private V8 runtime;
 
     private final GLObjects glObjects;
-    private final Files files;
+    private final FilesResourceManager files;
 
-    public WebGLRenderingContext(V8 runtime, GLObjects glObjects,Files files) {
+    public WebGLRenderingContext(V8 runtime, GLObjects glObjects, FilesResourceManager files) {
         this.runtime = runtime;
         this.glObjects = glObjects;
         this.files = files;

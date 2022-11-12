@@ -32,9 +32,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        glSurfaceView = (EngineGLSurfaceView)findViewById(R.id.engine_gl_surface_view);
+        glSurfaceView = findViewById(R.id.engine_gl_surface_view);
         touchGLSurfaceDelegate = new TouchGLSurfaceDelegate(glSurfaceView);
-        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.engine_gl_frame_view);
+        FrameLayout frameLayout = findViewById(R.id.engine_gl_frame_view);
         frameLayout.setOnTouchListener(this);
     }
 

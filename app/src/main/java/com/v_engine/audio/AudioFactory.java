@@ -7,7 +7,7 @@ import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Function;
 import com.eclipsesource.v8.V8Object;
-import com.v_engine.misc.Files;
+import com.v_engine.resource_manager.FilesResourceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class AudioFactory {
 
-    private Files files;
+    private FilesResourceManager files;
     private V8 runtime;
     private V8Array args;
     private boolean dirty = false;
@@ -24,7 +24,7 @@ public class AudioFactory {
 
     private Map<String, AssetFileDescriptor> audioLoaded = new HashMap<>();
 
-    public AudioFactory(V8 runtime,Files files) {
+    public AudioFactory(V8 runtime, FilesResourceManager files) {
         this.runtime = runtime;
         this.files = files;
         args = new V8Array(runtime);

@@ -1,4 +1,4 @@
-package com.v_engine.misc;
+package com.v_engine.resource_manager;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -11,6 +11,7 @@ import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Function;
 import com.eclipsesource.v8.V8Object;
+import com.v_engine.misc.GLObjects;
 import com.v_engine.misc.event_queue.EventQueue;
 import com.v_engine.misc.event_queue.EventQueueTask;
 
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class Files {
+public class FilesResourceManager {
 
     private static SparseArray<Bitmap> bitmapCache = new SparseArray<>();
     private static int cnt;
@@ -35,7 +36,7 @@ public class Files {
         return url;
     }
 
-    public Files(Context context, V8 runtime, GLObjects glObjects, EventQueue eventQueue) {
+    public FilesResourceManager(Context context, V8 runtime, GLObjects glObjects, EventQueue eventQueue) {
         this.context = context;
         this.runtime = runtime;
         this.glObjects = glObjects;

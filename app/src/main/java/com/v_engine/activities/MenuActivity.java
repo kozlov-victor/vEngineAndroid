@@ -24,7 +24,7 @@ public class MenuActivity extends Activity implements AdapterView.OnItemClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        ListView listView=(ListView) findViewById(R.id.listView);
+        ListView listView = findViewById(R.id.listView);
         try {
             String[] files = getAssets().list("out");
             for (String file : files) {
@@ -54,7 +54,7 @@ public class MenuActivity extends Activity implements AdapterView.OnItemClickLis
                 try {
                     is.close();
                 } catch (IOException e) {
-
+                    e.printStackTrace();
                 }
             }
         }

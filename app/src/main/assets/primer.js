@@ -107,7 +107,7 @@ _globalGL.texImage2D = (...args)=>{
                         this.id = imgData.id;
                         this.width = imgData.width;
                         this.height = imgData.height;
-                        this._onload();
+                        this._onload && this._onload();
                     },
                     this.onerror
                 );
